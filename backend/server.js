@@ -1,9 +1,10 @@
 const express = require("express");
+const app = express();
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const app = express();
-
 const connectDatabase = require("./Database/Database");
+const { readdirSync } = require("fs");
+const cors = require("cors");
 
 //Database Connection
 connectDatabase();
@@ -11,11 +12,16 @@ connectDatabase();
 // ENV CONNECT
 dotenv.config();
 
-app.get("/", function (req, res) {
-  res.send("Hello World");
-});
+// MIDDLEWARE
+app.use(express.json());
+app.use(cors());
 
-const port = process.env.PORT ? process.env.PORT : 5000;
+// ROUTES
+readdirSync("./Routes").map((file) =>
+  app.use("/", require(`./Routes/${file}`))
+);
+
+const port = process.env.PORT || 5000;
 
 app.listen(port, () => {
   console.log(`app running on port : ${port}`);
