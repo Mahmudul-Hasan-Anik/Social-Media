@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+
+// ENV CONNECT
+dotenv.config();
 
 const connectDatabase = () => {
-  mongoose
-    .connect(
-      "mongodb+srv://Ecommerce:authentication@cluster0.ncuib.mongodb.net/social_media?retryWrites=true&w=majority"
-    )
-    .then(() => {
-      console.log("Database Connected");
-    });
+  mongoose.connect(process.env.MONGO_DB_CONNECTION).then(() => {
+    console.log("Database Connected");
+  });
 };
 
 module.exports = connectDatabase;
