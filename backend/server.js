@@ -6,7 +6,7 @@ const connectDatabase = require("./Database/Database");
 const { readdirSync } = require("fs");
 const cors = require("cors");
 
-//Database Connection
+// DATABASE CONNECTION
 connectDatabase();
 
 // ENV CONNECT
