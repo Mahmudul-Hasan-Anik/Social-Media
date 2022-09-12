@@ -1,13 +1,17 @@
 const User = require("../Models/UserModels");
 const bcrypt = require("bcrypt");
-const { emailValidation, lengthValidation } = require("../Helpers/Validation");
+const {
+  emailValidation,
+  lengthValidation,
+  userValidation,
+} = require("../Helpers/Validation");
+const { generateToken } = require("../Helpers/Tokens");
 
 exports.register = async (req, res) => {
   try {
     const {
       firstName,
       lastName,
-      userName,
       email,
       password,
       birthYear,
@@ -30,7 +34,7 @@ exports.register = async (req, res) => {
         .json({ msg: "This Email already used. Please try another one" });
     }
 
-    // Length Check
+    // First & Last Name Length Check
     if (!lengthValidation(firstName, 4, 30)) {
       return res
         .status(400)
@@ -43,29 +47,34 @@ exports.register = async (req, res) => {
         .json({ msg: "Last Name must be between 4 and 30 character" });
     }
 
+    // password
     if (!lengthValidation(password, 8, 30)) {
       return res
         .status(400)
         .json({ msg: "Password must be minimum 8 character" });
     }
 
-    // password
-    const bcryptedPassword = bcrypt.hash(password, 12);
-    console.log(bcryptedPassword);
+    const bcryptedPassword = await bcrypt.hash(password, 12);
 
-    return;
+    // unique username genarate
+    const temporaryUserName = firstName + lastName;
+    const newUserName = await userValidation(temporaryUserName);
 
+    // return;
     const newUser = new User({
       firstName,
       lastName,
-      userName,
+      userName: newUserName,
       email,
-      password,
+      password: bcryptedPassword,
       birthYear,
       birthMonth,
       birthDay,
       gender,
     });
+
+    const checkToken = generateToken({ id: User._id }, "30m");
+    console.log(checkToken);
 
     await newUser.save();
     res.send(newUser);
