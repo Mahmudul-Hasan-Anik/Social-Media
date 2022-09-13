@@ -25,7 +25,6 @@ exports.userValidation = async (userName) => {
     if (check) {
       userName += (+new Date() * Math.random()).toString().substring(0, 1);
       user = true;
-      console.log(userName);
     } else {
       user = false;
     }

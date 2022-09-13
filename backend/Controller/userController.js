@@ -6,6 +6,8 @@ const {
   userValidation,
 } = require("../Helpers/Validation");
 const { generateToken } = require("../Helpers/Tokens");
+const { sendVerificationEmail } = require("../Helpers/Mailer");
+// const { sendEmailVerification } = require("../Helpers/Mailer");
 
 exports.register = async (req, res) => {
   try {
@@ -73,8 +75,11 @@ exports.register = async (req, res) => {
       gender,
     });
 
-    const checkToken = generateToken({ id: User._id }, "30m");
-    console.log(checkToken);
+    const emailVerificationToken = generateToken({ id: User._id }, "30m");
+
+    const url = `${process.env.BASE_URL}/activate/${emailVerificationToken}`;
+
+    sendVerificationEmail(newUser.email, newUser.firstName, url);
 
     await newUser.save();
     res.send(newUser);
